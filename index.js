@@ -89,55 +89,56 @@ async function goHome(page){
             'link':e.href
         }
     }))
-    let listSKPD = [];
     for (const p of dpaLink) {
         console.log(`mengunjungi ${p.halaman}`);
         await page.goto(p.link, {waitUntil: 'networkidle2'});
-        let skpd = '';
+        let listSkpd = [];
         switch (p.halaman) {
             case 'DPA SKPD':
                 await page.select('select[name="tabel-dpa-skpd_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#tabel-dpa-skpd > tbody > tr').length >= 43);    
-                skpd = await dpaSKPD.listSKPD(page);
-                listSKPD.push(skpd);
+                listSkpd = await dpaSKPD.listSKPD(page);
+                // listSKPD.push({'nama':p.halaman, 'skpd':skpd});
                 break;
             case 'DPA Pendapatan':
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                 skpd = await dpaPendapatan.listSKPD(page);
-                listSKPD.push(skpd);
+                // listSKPD.push({'nama':p.halaman, 'skpd':skpd});
                 break;
             case 'DPA Belanja':
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                 skpd = await dpaBelanja.listSKPD(page);
-                listSKPD.push(skpd);
+                // listSKPD.push({'nama':p.halaman, 'skpd':skpd});
                 break;
             case 'DPA Rincian Belanja':
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                 skpd = await dpaRincianBelanja.listSKPD(page);
-                listSKPD.push(skpd);
+                // listSKPD.push({'nama':p.halaman, 'skpd':skpd});
                 break;
             case 'DPA Pembiayaan':
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                 skpd = await dpaPembiayaan.listSKPD(page);
-                listSKPD.push(skpd);
+                // listSKPD.push({'nama':p.halaman, 'skpd':skpd});
                 break;
             default:
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
-                skpd = await dpaPersetujuanDepan.listSKPD(page);
-                listSKPD.push(skpd)
+                listSkpd = await dpaPersetujuanDepan.listSKPD(page);
+                for (const skpd of listSkpd) {
+                    console.log(skpd);
+                    // console.log(`Cek Jadwal ${skpd.nama}`);
+                    // skpd.link.click();
+                    break;
+                }
+                // listSKPD.push({'nama':p.halaman, 'skpd':skpd});
                 break;
         }
+        break;
     }
-    fs.writeFile('listSKPD.json', JSON.stringify(listSKPD), function(err) { 
-        if (err) {
-            console.log('The file could not be written.', err)
-        }
-        console.log('Saved')
-    });
+    
     // await browser.close();
 })();
