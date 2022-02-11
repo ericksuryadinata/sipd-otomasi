@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const $ = require('cheerio');
 const fs = require('fs');
 const cookiesFilePath = 'cookies.json';
 const {
@@ -11,6 +12,12 @@ const {
 } = require('./lib/dpa/index')
 
 async function login(page){
+    try {
+        await page.goto('https://burukab.sipd.kemendagri.go.id/siap', {waitUntil: ['networkidle0', 'domcontentloaded']});   
+    } catch (error) {
+        await page.goto('https://burukab.sipd.kemendagri.go.id/siap', {waitUntil: ['networkidle0', 'domcontentloaded']});   
+    }
+
     await page.type("#email", "keuangan");
     await page.type("#password", "bpk4d");
     await page.select("select#tahunanggaran","2021");
@@ -33,14 +40,17 @@ async function login(page){
 }
 
 async function goHome(page){
-    await page.goto('https://burukab.sipd.kemendagri.go.id/siap/home', {waitUntil: 'networkidle2'});
-}
 
+    try {
+        await page.goto('https://burukab.sipd.kemendagri.go.id/siap/home', {waitUntil: ['networkidle0', 'domcontentloaded']});   
+    } catch (error) {
+        await page.goto('https://burukab.sipd.kemendagri.go.id/siap/home', {waitUntil: ['networkidle0', 'domcontentloaded']});
+    }
+}
 
 (async () => {
     const browser = await puppeteer.launch({headless:false, defaultViewport:null, args:['--start-maximized']});
     const page = await browser.newPage();
-    await page.goto('https://burukab.sipd.kemendagri.go.id/siap', {waitUntil: 'networkidle2'});
 
     const previousSession = fs.existsSync(cookiesFilePath);
     if (previousSession) {
@@ -91,50 +101,37 @@ async function goHome(page){
     }))
     for (const p of dpaLink) {
         console.log(`mengunjungi ${p.halaman}`);
-        await page.goto(p.link, {waitUntil: 'networkidle2'});
-        let listSkpd = [];
+        await page.goto(p.link, {waitUntil: 'networkidle0'});
         switch (p.halaman) {
             case 'DPA SKPD':
                 await page.select('select[name="tabel-dpa-skpd_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#tabel-dpa-skpd > tbody > tr').length >= 43);    
-                listSkpd = await dpaSKPD.listSKPD(page);
-                // listSKPD.push({'nama':p.halaman, 'skpd':skpd});
+                await dpaSKPD.print(page);
                 break;
             case 'DPA Pendapatan':
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
-                skpd = await dpaPendapatan.listSKPD(page);
-                // listSKPD.push({'nama':p.halaman, 'skpd':skpd});
+                await dpaPendapatan.print(page);
                 break;
             case 'DPA Belanja':
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
-                skpd = await dpaBelanja.listSKPD(page);
-                // listSKPD.push({'nama':p.halaman, 'skpd':skpd});
+                await dpaBelanja.print(page);
                 break;
             case 'DPA Rincian Belanja':
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
-                skpd = await dpaRincianBelanja.listSKPD(page);
-                // listSKPD.push({'nama':p.halaman, 'skpd':skpd});
+                await dpaRincianBelanja.print(page);
                 break;
             case 'DPA Pembiayaan':
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
-                skpd = await dpaPembiayaan.listSKPD(page);
-                // listSKPD.push({'nama':p.halaman, 'skpd':skpd});
+                await dpaPembiayaan.print(page);
                 break;
             default:
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
-                listSkpd = await dpaPersetujuanDepan.listSKPD(page);
-                for (const skpd of listSkpd) {
-                    console.log(skpd);
-                    // console.log(`Cek Jadwal ${skpd.nama}`);
-                    // skpd.link.click();
-                    break;
-                }
-                // listSKPD.push({'nama':p.halaman, 'skpd':skpd});
+                await dpaPersetujuanDepan.print(page);
                 break;
         }
         break;
