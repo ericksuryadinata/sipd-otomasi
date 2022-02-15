@@ -4,6 +4,7 @@ const fs = require('fs');
 const cookiesFilePath = 'cookies.json';
 const {
     dpaPersetujuanDepan,
+    dpaDepan,
     dpaSKPD,
     dpaPendapatan,
     dpaBelanja,
@@ -20,7 +21,7 @@ async function login(page){
 
     await page.type("#email", "keuangan");
     await page.type("#password", "bpk4d");
-    await page.select("select#tahunanggaran","2021");
+    await page.select("select#tahunanggaran","2022");
     await page.evaluate( () => {
         onDaerahListItemClick({"idDaerah":388,"kodeDaerah":"8104","namaDaerah":"Kab. Buru"})
     })
@@ -128,10 +129,18 @@ async function goHome(page){
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                 await dpaPembiayaan.print(page);
                 break;
-            default:
+            case 'Halaman Persetujuan DPA':
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                 await dpaPersetujuanDepan.print(page);
+                break;
+            case 'Halaman Depan DPA':
+                await page.select('select[name="table_unit_length"]','-1');
+                await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
+                await dpaDepan.print(page);
+                break;
+            default:
+                console.log('Tidak ada menu');
                 break;
         }
         break;
