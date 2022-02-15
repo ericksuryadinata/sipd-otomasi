@@ -11,6 +11,14 @@ const {
     dpaRincianBelanja,
     dpaPembiayaan
 } = require('./lib/dpa/index')
+const {
+    USERNAME,
+    PASSWORD,
+    TAHUN_ANGGARAN,
+    ID_DAERAH,
+    KODE_DAERAH,
+    NAMA_DAERAH,
+} = require('./lib/config')
 
 async function login(page){
     try {
@@ -19,11 +27,11 @@ async function login(page){
         await page.goto('https://burukab.sipd.kemendagri.go.id/siap', {waitUntil: ['networkidle0', 'domcontentloaded']});   
     }
 
-    await page.type("#email", "keuangan");
-    await page.type("#password", "bpk4d");
-    await page.select("select#tahunanggaran","2022");
+    await page.type("#email", USERNAME);
+    await page.type("#password", PASSWORD);
+    await page.select("select#tahunanggaran", TAHUN_ANGGARAN);
     await page.evaluate( () => {
-        onDaerahListItemClick({"idDaerah":388,"kodeDaerah":"8104","namaDaerah":"Kab. Buru"})
+        onDaerahListItemClick({ "idDaerah": ID_DAERAH, "kodeDaerah": KODE_DAERAH, "namaDaerah": NAMA_DAERAH })
     })
     await page.click("button[type='submit']")
 
