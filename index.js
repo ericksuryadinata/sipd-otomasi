@@ -33,9 +33,11 @@ async function login(page){
     await page.type("#email", USERNAME);
     await page.type("#password", PASSWORD);
     await page.select("select#tahunanggaran", TAHUN_ANGGARAN);
-    await page.evaluate( () => {
+    page.on('console', (log) => console[log._type](log._text))
+    await page.evaluate( ({ID_DAERAH, KODE_DAERAH, NAMA_DAERAH}) => {
+
         onDaerahListItemClick({ "idDaerah": ID_DAERAH, "kodeDaerah": KODE_DAERAH, "namaDaerah": NAMA_DAERAH })
-    })
+    }, {ID_DAERAH, KODE_DAERAH, NAMA_DAERAH})
     await page.click("button[type='submit']")
 
     await page.waitForNavigation();
@@ -63,7 +65,6 @@ async function goHome(page){
 (async () => {
     const browser = await puppeteer.launch({headless:false, defaultViewport:null, args:['--start-maximized']});
     const page = await browser.newPage();
-
     const previousSession = fs.existsSync(cookiesFilePath);
     if (previousSession) {
         // If file exist load the cookies
