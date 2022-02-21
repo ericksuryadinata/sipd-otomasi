@@ -61,7 +61,7 @@ async function goHome(page){
 }
 
 (async () => {
-    const browser = await puppeteer.launch({headless:false, defaultViewport:null, args:['--start-maximized']});
+    const browser = await puppeteer.launch({headless:false, defaultViewport:null, args:['--start-maximized'], devtools:true});
     const page = await browser.newPage();
     const previousSession = fs.existsSync(cookiesFilePath);
     if (previousSession) {
