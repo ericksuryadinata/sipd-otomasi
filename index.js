@@ -12,8 +12,8 @@ const {
     dpaPembiayaan
 } = require('./lib/dpa/index')
 const {
-    USERNAME,
-    PASSWORD,
+    USER_TAPD,
+    PASSWORD_TAPD,
     TAHUN_ANGGARAN,
     ID_DAERAH,
     KODE_DAERAH,
@@ -30,8 +30,8 @@ async function login(page){
         await page.goto(LINKS.DEPAN.LOGIN, {waitUntil: ['networkidle0', 'domcontentloaded']});   
     }
 
-    await page.type("#email", USERNAME);
-    await page.type("#password", PASSWORD);
+    await page.type("#email", USER_TAPD);
+    await page.type("#password", PASSWORD_TAPD);
     await page.select("select#tahunanggaran", TAHUN_ANGGARAN);
     await page.evaluate( ({ID_DAERAH, KODE_DAERAH, NAMA_DAERAH}) => {
         onDaerahListItemClick({ "idDaerah": ID_DAERAH, "kodeDaerah": KODE_DAERAH, "namaDaerah": NAMA_DAERAH })
