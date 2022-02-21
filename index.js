@@ -19,12 +19,15 @@ const {
     KODE_DAERAH,
     NAMA_DAERAH,
 } = require('./lib/config')
+const{
+    LINKS
+} = require('./lib/api')
 
 async function login(page){
     try {
-        await page.goto('https://burukab.sipd.kemendagri.go.id/siap', {waitUntil: ['networkidle0', 'domcontentloaded']});   
+        await page.goto(LINKS.DEPAN.LOGIN, {waitUntil: ['networkidle0', 'domcontentloaded']});   
     } catch (error) {
-        await page.goto('https://burukab.sipd.kemendagri.go.id/siap', {waitUntil: ['networkidle0', 'domcontentloaded']});   
+        await page.goto(LINKS.DEPAN.LOGIN, {waitUntil: ['networkidle0', 'domcontentloaded']});   
     }
 
     await page.type("#email", USERNAME);
@@ -51,9 +54,9 @@ async function login(page){
 async function goHome(page){
 
     try {
-        await page.goto('https://burukab.sipd.kemendagri.go.id/siap/home', {waitUntil: ['networkidle0', 'domcontentloaded']});   
+        await page.goto(LINKS.DEPAN.HOME, {waitUntil: ['networkidle0', 'domcontentloaded']});   
     } catch (error) {
-        await page.goto('https://burukab.sipd.kemendagri.go.id/siap/home', {waitUntil: ['networkidle0', 'domcontentloaded']});
+        await page.goto(LINKS.DEPAN.HOME, {waitUntil: ['networkidle0', 'domcontentloaded']});
     }
 }
 
