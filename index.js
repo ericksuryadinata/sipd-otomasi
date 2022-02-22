@@ -129,11 +129,19 @@ async function goHome(page){
     for (const p of dpaLink) {
         switch (p.halaman) {
             case 'DPA SKPD':
-                console.log(`mengunjungi ${p.halaman}`);
-                await page.goto(p.link, {waitUntil: 'networkidle0'});
-                await page.select('select[name="tabel-dpa-skpd_length"]','-1');
-                await page.waitForFunction(() => document.querySelectorAll('#tabel-dpa-skpd > tbody > tr').length >= 43);    
-                await dpaSKPD.print(page);
+                file = `${PATH.DPA.JSON}\\dpaSKPD.json`;
+                if(!fs.existsSync(file)){
+                    console.log(`mengunjungi ${p.halaman}`);
+                    await page.goto(p.link, {waitUntil: 'networkidle0'});
+                    await page.select('select[name="tabel-dpa-skpd_length"]','-1');
+                    await page.waitForFunction(() => document.querySelectorAll('#tabel-dpa-skpd > tbody > tr').length >= 43);    
+                    await dpaSKPD.getLink(page);
+                } else {
+                    const jsonContent = fs.readFileSync(file);
+                    const listSKPD = JSON.parse(jsonContent);
+                    console.log("File JSON sudah ada, melakukan download")
+                    await dpaSKPD.download(listSKPD)
+                }
                 break;
             case 'DPA Pendapatan':
                 console.log(`mengunjungi ${p.halaman}`);
