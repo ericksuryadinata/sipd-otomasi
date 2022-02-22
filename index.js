@@ -125,7 +125,7 @@ async function goHome(page){
     }))
 
     let file = ''
-    
+
     for (const p of dpaLink) {
         switch (p.halaman) {
             case 'DPA SKPD':
@@ -192,7 +192,6 @@ async function goHome(page){
                     console.log("File JSON sudah ada, melakukan download")
                     await dpaDepan.download(listSKPD)
                 }
-                
                 break;
             default:
                 console.log('Tidak ada menu');
