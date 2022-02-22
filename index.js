@@ -123,44 +123,74 @@ async function goHome(page){
             'link':e.href
         }
     }))
+
     for (const p of dpaLink) {
-        console.log(`mengunjungi ${p.halaman}`);
-        await page.goto(p.link, {waitUntil: 'networkidle0'});
         switch (p.halaman) {
             case 'DPA SKPD':
+                console.log(`mengunjungi ${p.halaman}`);
+                await page.goto(p.link, {waitUntil: 'networkidle0'});
                 await page.select('select[name="tabel-dpa-skpd_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#tabel-dpa-skpd > tbody > tr').length >= 43);    
                 await dpaSKPD.print(page);
                 break;
             case 'DPA Pendapatan':
+                console.log(`mengunjungi ${p.halaman}`);
+                await page.goto(p.link, {waitUntil: 'networkidle0'});
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                 await dpaPendapatan.print(page);
                 break;
             case 'DPA Belanja':
+                console.log(`mengunjungi ${p.halaman}`);
+                await page.goto(p.link, {waitUntil: 'networkidle0'});
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                 await dpaBelanja.print(page);
                 break;
             case 'DPA Rincian Belanja':
+                console.log(`mengunjungi ${p.halaman}`);
+                await page.goto(p.link, {waitUntil: 'networkidle0'});
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                 await dpaRincianBelanja.print(page);
                 break;
             case 'DPA Pembiayaan':
+                console.log(`mengunjungi ${p.halaman}`);
+                await page.goto(p.link, {waitUntil: 'networkidle0'});
                 await page.select('select[name="table_unit_length"]','-1');
                 await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                 await dpaPembiayaan.print(page);
                 break;
             case 'Halaman Persetujuan DPA':
-                await page.select('select[name="table_unit_length"]','-1');
-                await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
-                await dpaPersetujuanDepan.print(page);
+                let file = `${PATH.DPA.JSON}\\halamanPersetujuan.json`;
+                if(!fs.existsSync(file)){
+                    console.log(`mengunjungi ${p.halaman}`);
+                    await page.goto(p.link, {waitUntil: 'networkidle0'});
+                    await page.select('select[name="table_unit_length"]','-1');
+                    await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
+                    await dpaPersetujuanDepan.getLink(page);
+                } else {
+                    const jsonContent = fs.readFileSync(file);
+                    const listSKPD = JSON.parse(jsonContent);
+                    console.log("File JSON sudah ada, melakukan download")
+                    await dpaPersetujuanDepan.download(listSKPD)
+                }
                 break;
             case 'Halaman Depan DPA':
-                await page.select('select[name="table_unit_length"]','-1');
-                await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
-                await dpaDepan.print(page);
+                let file = `${PATH.DPA.JSON}\\halamanDepan.json`;
+                if(!fs.existsSync(file)){
+                    console.log(`mengunjungi ${p.halaman}`);
+                    await page.goto(p.link, {waitUntil: 'networkidle0'});
+                    await page.select('select[name="table_unit_length"]','-1');
+                    await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
+                    await dpaDepan.getLink(page);
+                } else {
+                    const jsonContent = fs.readFileSync(file);
+                    const listSKPD = JSON.parse(jsonContent);
+                    console.log("File JSON sudah ada, melakukan download")
+                    await dpaDepan.download(listSKPD)
+                }
+                
                 break;
             default:
                 console.log('Tidak ada menu');
