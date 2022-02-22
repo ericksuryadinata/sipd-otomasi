@@ -124,9 +124,8 @@ async function goHome(page){
         }
     }))
 
-    let file = ''
-
     for (const p of dpaLink) {
+        let file = '', jsonContent = '', listSKPD = ''
         switch (p.halaman) {
             case 'DPA SKPD':
                 file = `${PATH.DPA.JSON}\\dpaSKPD.json`;
@@ -137,8 +136,8 @@ async function goHome(page){
                     await page.waitForFunction(() => document.querySelectorAll('#tabel-dpa-skpd > tbody > tr').length >= 43);    
                     await dpaSKPD.getLink(page);
                 } else {
-                    const jsonContent = fs.readFileSync(file);
-                    const listSKPD = JSON.parse(jsonContent);
+                    jsonContent = fs.readFileSync(file);
+                    listSKPD = JSON.parse(jsonContent);
                     console.log("File JSON sudah ada, melakukan download")
                     await dpaSKPD.download(listSKPD)
                 }
@@ -152,18 +151,26 @@ async function goHome(page){
                     await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                     await dpaPendapatan.getLink(page);
                 } else {
-                    const jsonContent = fs.readFileSync(file);
-                    const listSKPD = JSON.parse(jsonContent);
+                    jsonContent = fs.readFileSync(file);
+                    listSKPD = JSON.parse(jsonContent);
                     console.log("File JSON sudah ada, melakukan download")
                     await dpaPendapatan.download(listSKPD)
                 }
                 break;
             case 'DPA Belanja':
-                console.log(`mengunjungi ${p.halaman}`);
-                await page.goto(p.link, {waitUntil: 'networkidle0'});
-                await page.select('select[name="table_unit_length"]','-1');
-                await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
-                await dpaBelanja.print(page);
+                file = `${PATH.DPA.JSON}\\dpaBelanja.json`;
+                if(!fs.existsSync(file)){
+                    console.log(`mengunjungi ${p.halaman}`);
+                    await page.goto(p.link, {waitUntil: 'networkidle0'});
+                    await page.select('select[name="table_unit_length"]','-1');
+                    await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
+                    await dpaBelanja.print(page);
+                } else {
+                    jsonContent = fs.readFileSync(file);
+                    listSKPD = JSON.parse(jsonContent);
+                    console.log("File JSON sudah ada, melakukan download")
+                    await dpaBelanja.download(listSKPD)
+                }
                 break;
             case 'DPA Rincian Belanja':
                 console.log(`mengunjungi ${p.halaman}`);
@@ -188,8 +195,8 @@ async function goHome(page){
                     await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                     await dpaPersetujuanDepan.getLink(page);
                 } else {
-                    const jsonContent = fs.readFileSync(file);
-                    const listSKPD = JSON.parse(jsonContent);
+                    jsonContent = fs.readFileSync(file);
+                    listSKPD = JSON.parse(jsonContent);
                     console.log("File JSON sudah ada, melakukan download")
                     await dpaPersetujuanDepan.download(listSKPD)
                 }
@@ -203,8 +210,8 @@ async function goHome(page){
                     await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                     await dpaDepan.getLink(page);
                 } else {
-                    const jsonContent = fs.readFileSync(file);
-                    const listSKPD = JSON.parse(jsonContent);
+                    jsonContent = fs.readFileSync(file);
+                    listSKPD = JSON.parse(jsonContent);
                     console.log("File JSON sudah ada, melakukan download")
                     await dpaDepan.download(listSKPD)
                 }
