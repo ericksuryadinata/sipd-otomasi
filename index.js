@@ -18,10 +18,11 @@ const {
     ID_DAERAH,
     KODE_DAERAH,
     NAMA_DAERAH,
+    NAMA_JADWAL,
 } = require('./lib/config')
 const{
     LINKS,
-    ax
+    PATH,
 } = require('./lib/api')
 
 async function login(page){
@@ -63,7 +64,7 @@ async function goHome(page){
 }
 
 (async () => {
-    const browser = await puppeteer.launch({headless:false, defaultViewport:null, args:['--start-maximized']}); //, defaultViewport:null, args:['--start-maximized']
+    const browser = await puppeteer.launch({headless:true}); //, defaultViewport:null, args:['--start-maximized']
     const page = await browser.newPage();
     const previousSession = fs.existsSync(cookiesFilePath);
     if (previousSession) {
@@ -105,7 +106,15 @@ async function goHome(page){
         await login(page);
     }
 
-    
+    if(!fs.existsSync(PATH.DPA.UTAMA)){
+        console.log(`Membuat Folder ${PATH.DPA.UTAMA}`)
+        fs.mkdirSync(PATH.DPA.UTAMA)
+        console.log(`Membuat Folder ${PATH.DPA.JSON}`)
+        fs.mkdirSync(PATH.DPA.JSON)
+    } else {
+        console.log(`Folder ${PATH.DPA.UTAMA} Sudah Ada`)
+        console.log(`Folder ${PATH.DPA.JSON} Sudah Ada`)
+    }
 
     let dpa = await page.$("aside > div > div > nav > ul > li:nth-child(3) > ul > li:nth-child(2) > ul")
     let dpaLink = await dpa.$$eval("a", el => el.map(e => {
