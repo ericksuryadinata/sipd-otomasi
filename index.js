@@ -124,6 +124,8 @@ async function goHome(page){
         }
     }))
 
+    let file = ''
+    
     for (const p of dpaLink) {
         switch (p.halaman) {
             case 'DPA SKPD':
@@ -162,7 +164,7 @@ async function goHome(page){
                 await dpaPembiayaan.print(page);
                 break;
             case 'Halaman Persetujuan DPA':
-                let file = `${PATH.DPA.JSON}\\halamanPersetujuan.json`;
+                file = `${PATH.DPA.JSON}\\halamanPersetujuan.json`;
                 if(!fs.existsSync(file)){
                     console.log(`mengunjungi ${p.halaman}`);
                     await page.goto(p.link, {waitUntil: 'networkidle0'});
@@ -177,7 +179,7 @@ async function goHome(page){
                 }
                 break;
             case 'Halaman Depan DPA':
-                let file = `${PATH.DPA.JSON}\\halamanDepan.json`;
+                file = `${PATH.DPA.JSON}\\halamanDepan.json`;
                 if(!fs.existsSync(file)){
                     console.log(`mengunjungi ${p.halaman}`);
                     await page.goto(p.link, {waitUntil: 'networkidle0'});
@@ -196,7 +198,6 @@ async function goHome(page){
                 console.log('Tidak ada menu');
                 break;
         }
-        break;
     }
     
     // await browser.close();
