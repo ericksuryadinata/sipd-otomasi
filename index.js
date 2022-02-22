@@ -20,10 +20,12 @@ const {
     NAMA_DAERAH,
 } = require('./lib/config')
 const{
-    LINKS
+    LINKS,
+    ax
 } = require('./lib/api')
 
 async function login(page){
+    console.log("Mengunjungi halaman login")
     try {
         await page.goto(LINKS.DEPAN.LOGIN, {waitUntil: ['networkidle0', 'domcontentloaded']});   
     } catch (error) {
@@ -61,7 +63,7 @@ async function goHome(page){
 }
 
 (async () => {
-    const browser = await puppeteer.launch({headless:false, defaultViewport:null, args:['--start-maximized'], devtools:true});
+    const browser = await puppeteer.launch({headless:false, defaultViewport:null, args:['--start-maximized']}); //, defaultViewport:null, args:['--start-maximized']
     const page = await browser.newPage();
     const previousSession = fs.existsSync(cookiesFilePath);
     if (previousSession) {
@@ -102,6 +104,8 @@ async function goHome(page){
     } else {
         await login(page);
     }
+
+    
 
     let dpa = await page.$("aside > div > div > nav > ul > li:nth-child(3) > ul > li:nth-child(2) > ul")
     let dpaLink = await dpa.$$eval("a", el => el.map(e => {
