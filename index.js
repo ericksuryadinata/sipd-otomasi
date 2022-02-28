@@ -173,11 +173,19 @@ async function goHome(page){
                 }
                 break;
             case 'DPA Rincian Belanja':
-                console.log(`mengunjungi ${p.halaman}`);
-                await page.goto(p.link, {waitUntil: 'networkidle0'});
-                await page.select('select[name="table_unit_length"]','-1');
-                await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
-                await dpaRincianBelanja.print(page);
+                file = `${PATH.DPA.JSON}\\dpaRincianBelanja.json`;
+                if(!fs.existsSync(file)){
+                    console.log(`mengunjungi ${p.halaman}`);
+                    await page.goto(p.link, {waitUntil: 'networkidle0'});
+                    await page.select('select[name="table_unit_length"]','-1');
+                    await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
+                    await dpaRincianBelanja.print(page);
+                } else {
+                    jsonContent = fs.readFileSync(file);
+                    listSKPD = JSON.parse(jsonContent);
+                    console.log("File JSON sudah ada, melakukan download")
+                    await dpaRincianBelanja.download(listSKPD)
+                }
                 break;
             case 'DPA Pembiayaan':
                 console.log(`mengunjungi ${p.halaman}`);
