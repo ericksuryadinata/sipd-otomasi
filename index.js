@@ -64,7 +64,7 @@ async function goHome(page){
 }
 
 (async () => {
-    const browser = await puppeteer.launch({headless:true}); //, defaultViewport:null, args:['--start-maximized']
+    const browser = await puppeteer.launch({headless:false, devtools: true, defaultViewport:null, args:['--start-maximized'] }); //, defaultViewport:null, args:['--start-maximized']
     const page = await browser.newPage();
     const previousSession = fs.existsSync(cookiesFilePath);
     if (previousSession) {
@@ -189,10 +189,10 @@ async function goHome(page){
                 break;
             case 'DPA Pembiayaan':
                 console.log(`mengunjungi ${p.halaman}`);
-                await page.goto(p.link, {waitUntil: 'networkidle0'});
-                await page.select('select[name="table_unit_length"]','-1');
-                await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
-                await dpaPembiayaan.print(page);
+                // await page.goto(p.link, {waitUntil: 'networkidle0'});
+                // await page.select('select[name="table_unit_length"]','-1');
+                // await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
+                // await dpaPembiayaan.print(page);
                 break;
             case 'Halaman Persetujuan DPA':
                 file = `${PATH.DPA.JSON}\\halamanPersetujuan.json`;
