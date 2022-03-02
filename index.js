@@ -65,7 +65,7 @@ async function goHome(page){
 }
 
 (async () => {
-    const browser = await puppeteer.launch({headless:false, devtools: true, defaultViewport:null, args:['--start-maximized']}); //, devtools: true, defaultViewport:null, args:['--start-maximized'] 
+    const browser = await puppeteer.launch({headless:true, devtools: true, defaultViewport:null, args:['--start-maximized']}); //, devtools: true, defaultViewport:null, args:['--start-maximized'] 
     const page = await browser.newPage();
     const previousSession = fs.existsSync(cookiesFilePath);
     if (previousSession) {
@@ -125,22 +125,34 @@ async function goHome(page){
         }
     }))
 
+    let listSKPDRakBelanja = '', jsonContent = '', file = `${PATH.DPA.JSON}\\rakBelanja.json`
+    if(!fs.existsSync(file)){
+        let pageEvaluate = await page.evaluate(async ({LINKS})=>{
+            let date = new Date().getTime()
+            let csrf = document.querySelector("head > meta[name='csrf-token']").content
+            let response = await fetch(`${LINKS.RAK.BELANJA}0?_=${date}`)
+            let { data:listSKPD } = await response.json()
+            return {
+                csrfToken:csrf,
+                listSKPD:listSKPD
+            }
+        }, {LINKS})
 
-    let pageEvaluate = await page.evaluate(async ({LINKS})=>{
-        let date = new Date().getTime()
-        let csrf = document.querySelector("head > meta[name='csrf-token']").content
-        let response = await fetch(`${LINKS.RAK.BELANJA}0?_=${date}`)
-        let { data:listSKPD } = await response.json()
-        return {
-            csrfToken:csrf,
-            listSKPD:listSKPD
-        }
-    }, {LINKS})
+        listSKPDRakBelanja = pageEvaluate.listSKPD
 
-    const listSKPDRakBelanja = pageEvaluate.listSKPD
+        fs.writeFile(file, JSON.stringify(listSKPDRakBelanja), function(err) { 
+            if (err) {
+                console.log('File JSON tidak bisa disimpan', err)
+            }
+            console.log('List SKPD Lengkap Berhasil Disimpan')
+        });
+    } else {
+        jsonContent = fs.readFileSync(file);
+        listSKPDRakBelanja = JSON.parse(jsonContent);
+    }
 
     for (const p of dpaLink) {
-        let file = '', jsonContent = '', listSKPD = ''
+        let listSKPD = '';
         switch (p.halaman) {
             case 'DPA SKPD':
                 file = `${PATH.DPA.JSON}\\dpaSKPD.json`;
@@ -224,12 +236,12 @@ async function goHome(page){
                     await page.goto(p.link, {waitUntil: 'networkidle0'});
                     await page.select('select[name="table_unit_length"]','-1');
                     await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
-                    await dpaPersetujuanDepan.getLink(page);
+                    await dpaPersetujuanDepan.getLink(page, listSKPDRakBelanja);
                 } else {
                     jsonContent = fs.readFileSync(file);
                     listSKPD = JSON.parse(jsonContent);
                     console.log("File JSON sudah ada, melakukan download")
-                    await dpaPersetujuanDepan.download(listSKPD)
+                    await dpaPersetujuanDepan.download(listSKPD, listSKPDRakBelanja)
                 }
                 break;
             case 'Halaman Depan DPA':
