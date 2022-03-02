@@ -125,6 +125,20 @@ async function goHome(page){
         }
     }))
 
+
+    let pageEvaluate = await page.evaluate(async ({LINKS})=>{
+        let date = new Date().getTime()
+        let csrf = document.querySelector("head > meta[name='csrf-token']").content
+        let response = await fetch(`${LINKS.RAK.BELANJA}0?_=${date}`)
+        let { data:listSKPD } = await response.json()
+        return {
+            csrfToken:csrf,
+            listSKPD:listSKPD
+        }
+    }, {LINKS})
+
+    const listSKPDRakBelanja = pageEvaluate.listSKPD
+
     for (const p of dpaLink) {
         let file = '', jsonContent = '', listSKPD = ''
         switch (p.halaman) {
@@ -212,10 +226,10 @@ async function goHome(page){
                     await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                     await dpaPersetujuanDepan.getLink(page);
                 } else {
-                    // jsonContent = fs.readFileSync(file);
-                    // listSKPD = JSON.parse(jsonContent);
-                    // console.log("File JSON sudah ada, melakukan download")
-                    // await dpaPersetujuanDepan.download(listSKPD)
+                    jsonContent = fs.readFileSync(file);
+                    listSKPD = JSON.parse(jsonContent);
+                    console.log("File JSON sudah ada, melakukan download")
+                    await dpaPersetujuanDepan.download(listSKPD)
                 }
                 break;
             case 'Halaman Depan DPA':
