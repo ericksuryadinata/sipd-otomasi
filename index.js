@@ -23,6 +23,7 @@ const {
 const{
     LINKS,
     PATH,
+    ax
 } = require('./lib/api')
 
 async function login(page){
@@ -64,7 +65,7 @@ async function goHome(page){
 }
 
 (async () => {
-    const browser = await puppeteer.launch({headless:true}); //, devtools: true, defaultViewport:null, args:['--start-maximized'] 
+    const browser = await puppeteer.launch({headless:false, devtools: true, defaultViewport:null, args:['--start-maximized']}); //, devtools: true, defaultViewport:null, args:['--start-maximized'] 
     const page = await browser.newPage();
     const previousSession = fs.existsSync(cookiesFilePath);
     if (previousSession) {
@@ -115,7 +116,7 @@ async function goHome(page){
         console.log(`Folder ${PATH.DPA.UTAMA} Sudah Ada`)
         console.log(`Folder ${PATH.DPA.JSON} Sudah Ada`)
     }
-
+    
     let dpa = await page.$("aside > div > div > nav > ul > li:nth-child(3) > ul > li:nth-child(2) > ul")
     let dpaLink = await dpa.$$eval("a", el => el.map(e => {
         return {
@@ -181,18 +182,26 @@ async function goHome(page){
                     await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                     await dpaRincianBelanja.getLink(page);
                 } else {
-                    jsonContent = fs.readFileSync(file);
-                    listSKPD = JSON.parse(jsonContent);
-                    console.log("File JSON sudah ada, melakukan download")
-                    await dpaRincianBelanja.download(listSKPD)
+                    // jsonContent = fs.readFileSync(file);
+                    // listSKPD = JSON.parse(jsonContent);
+                    // console.log("File JSON sudah ada, melakukan download")
+                    // await dpaRincianBelanja.download(listSKPD)
                 }
                 break;
             case 'DPA Pembiayaan':
-                console.log(`mengunjungi ${p.halaman}`);
-                // await page.goto(p.link, {waitUntil: 'networkidle0'});
-                // await page.select('select[name="table_unit_length"]','-1');
-                // await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
-                // await dpaPembiayaan.print(page);
+                file = `${PATH.DPA.JSON}\\dpaPembiayaan.json`;
+                if(!fs.existsSync(file)){
+                    console.log(`mengunjungi ${p.halaman}`);
+                    await page.goto(p.link, {waitUntil: 'networkidle0'});
+                    await page.select('select[name="table_unit_length"]','-1');
+                    await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
+                    await dpaPembiayaan.getLink(page);
+                } else {
+                    // jsonContent = fs.readFileSync(file);
+                    // listSKPD = JSON.parse(jsonContent);
+                    // console.log("File JSON sudah ada, melakukan download")
+                    // await dpaPembiayaan.download(listSKPD)
+                }
                 break;
             case 'Halaman Persetujuan DPA':
                 file = `${PATH.DPA.JSON}\\halamanPersetujuan.json`;
