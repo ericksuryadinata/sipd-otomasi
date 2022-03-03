@@ -155,7 +155,7 @@ async function goHome(page){
     }
 
     for (const p of dpaLink) {
-        let listSKPD = '';
+        let listSKPD = '', banyakFile = '';
         switch (p.halaman) {
             case 'DPA SKPD':
                 file = `${PATH.DPA.JSON}\\dpaSKPD.json`;
@@ -166,10 +166,15 @@ async function goHome(page){
                     await page.waitForFunction(() => document.querySelectorAll('#tabel-dpa-skpd > tbody > tr').length >= 43);    
                     await dpaSKPD.getLink(page, listSKPDRakBelanja);
                 } else {
-                    jsonContent = fs.readFileSync(file);
-                    listSKPD = JSON.parse(jsonContent);
-                    console.log("File JSON sudah ada, melakukan download")
-                    await dpaSKPD.download(listSKPD, listSKPDRakBelanja)
+                    banyakFile = fs.readdirSync(`${PATH.DPA.SKPD}`)
+                    if(banyakFile.length === listSKPDRakBelanja.length){
+                        console.log('DPA SKPD sudah lengkap, melanjutkan ....')
+                    } else {
+                        jsonContent = fs.readFileSync(file);
+                        listSKPD = JSON.parse(jsonContent);
+                        console.log("File JSON sudah ada, melakukan download")
+                        await dpaSKPD.download(listSKPD, listSKPDRakBelanja)   
+                    }
                 }
                 break;
             case 'DPA Pendapatan':
@@ -196,10 +201,15 @@ async function goHome(page){
                     await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                     await dpaBelanja.getLink(page, listSKPDRakBelanja);
                 } else {
-                    jsonContent = fs.readFileSync(file);
-                    listSKPD = JSON.parse(jsonContent);
-                    console.log("File JSON sudah ada, melakukan download")
-                    await dpaBelanja.download(listSKPD, listSKPDRakBelanja)
+                    banyakFile = fs.readdirSync(`${PATH.DPA.BELANJA}`)
+                    if(banyakFile.length === listSKPDRakBelanja.length){
+                        console.log('DPA Belanja sudah lengkap, melanjutkan ....')
+                    } else {
+                        jsonContent = fs.readFileSync(file);
+                        listSKPD = JSON.parse(jsonContent);
+                        console.log("File JSON sudah ada, melakukan download")
+                        await dpaBelanja.download(listSKPD, listSKPDRakBelanja)
+                    }
                 }
                 break;
             case 'DPA Rincian Belanja':
@@ -241,10 +251,15 @@ async function goHome(page){
                     await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                     await dpaPersetujuanDepan.getLink(page, listSKPDRakBelanja);
                 } else {
-                    jsonContent = fs.readFileSync(file);
-                    listSKPD = JSON.parse(jsonContent);
-                    console.log("File JSON sudah ada, melakukan download")
-                    await dpaPersetujuanDepan.download(listSKPD, listSKPDRakBelanja)
+                    banyakFile = fs.readdirSync(`${PATH.DPA.PERSETUJUANDEPAN}`)
+                    if(banyakFile.length === listSKPDRakBelanja.length){
+                        console.log('Halaman Persetujuan DPA sudah lengkap, melanjutkan ....')
+                    } else {
+                        jsonContent = fs.readFileSync(file);
+                        listSKPD = JSON.parse(jsonContent);
+                        console.log("File JSON sudah ada, melakukan download")
+                        await dpaPersetujuanDepan.download(listSKPD, listSKPDRakBelanja)
+                    }
                 }
                 break;
             case 'Halaman Depan DPA':
@@ -256,10 +271,16 @@ async function goHome(page){
                     await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                     await dpaDepan.getLink(page, listSKPDRakBelanja);
                 } else {
-                    jsonContent = fs.readFileSync(file);
-                    listSKPD = JSON.parse(jsonContent);
-                    console.log("File JSON sudah ada, melakukan download")
-                    await dpaDepan.download(listSKPD, listSKPDRakBelanja)
+                    banyakFile = fs.readdirSync(`${PATH.DPA.DEPAN}`)
+                    
+                    if(banyakFile.length === listSKPDRakBelanja.length){
+                        console.log('Halaman Depan DPA sudah lengkap, melanjutkan ....')
+                    } else {
+                        jsonContent = fs.readFileSync(file);
+                        listSKPD = JSON.parse(jsonContent);
+                        console.log("File JSON sudah ada, melakukan download")
+                        await dpaDepan.download(listSKPD, listSKPDRakBelanja)   
+                    }
                 }
                 break;
             default:
