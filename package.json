@@ -4,6 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.26.0",
+    "axios-retry": "^3.2.4",
     "cheerio": "^1.0.0-rc.10",
     "dotenv": "^16.0.0",
     "download": "^8.0.0",
