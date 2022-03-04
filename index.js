@@ -125,6 +125,7 @@ async function goHome(page){
     }))
 
     let listSKPDRakBelanja = [], jsonContent = '', file = `${PATH.DPA.JSON}\\rakBelanja.json`
+
     if(!fs.existsSync(file)){
         let pageEvaluate = await page.evaluate(async ({LINKS})=>{
             let date = new Date().getTime()
@@ -186,10 +187,15 @@ async function goHome(page){
                     await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                     await dpaPendapatan.getLink(page, listSKPDRakBelanja);
                 } else {
+                    banyakFile = fs.readdirSync(`${PATH.DPA.PENDAPATAN}`)
                     jsonContent = fs.readFileSync(file);
                     listSKPD = JSON.parse(jsonContent);
-                    console.log("File JSON sudah ada, melakukan download")
-                    await dpaPendapatan.download(listSKPD, listSKPDRakBelanja)
+                    if(banyakFile.length === listSKPD.length){
+                        console.log('DPA Pendapatan sudah lengkap, melanjutkan ....')
+                    } else {    
+                        console.log("File JSON sudah ada, melakukan download")
+                        await dpaBelanja.download(listSKPD, listSKPDRakBelanja)
+                    }
                 }
                 break;
             case 'DPA Belanja':
@@ -236,10 +242,15 @@ async function goHome(page){
                     await page.waitForFunction(() => document.querySelectorAll('#table_unit > tbody > tr').length >= 43);
                     await dpaPembiayaan.getLink(page, listSKPDRakBelanja);
                 } else {
+                    banyakFile = fs.readdirSync(`${PATH.DPA.PEMBIAYAAN}`)
                     jsonContent = fs.readFileSync(file);
                     listSKPD = JSON.parse(jsonContent);
-                    console.log("File JSON sudah ada, melakukan download")
-                    await dpaPembiayaan.download(listSKPD, listSKPDRakBelanja)
+                    if(banyakFile.length === listSKPD.length){
+                        console.log('DPA Pembiayaan sudah lengkap, melanjutkan ....')
+                    } else {    
+                        console.log("File JSON sudah ada, melakukan download")
+                        await dpaPembiayaan.download(listSKPD, listSKPDRakBelanja)
+                    }
                 }
                 break;
             case 'Halaman Persetujuan DPA':
@@ -288,6 +299,8 @@ async function goHome(page){
                 break;
         }
     }
+
+    // jika dirasa lengkap, baru dilakukan merge file
     
     // await browser.close();
 })();
